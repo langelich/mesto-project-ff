@@ -1,7 +1,7 @@
 import './index.css';
-import { initialCards, createCard, deleteCard, isLiked } from './components/cards';
-import { openModal, openModalImage, closeModal } from './components/modal';
-
+import { initialCards } from './components/cards';
+import { createCard, deleteCard, isLiked } from './components/card';
+import { openModal, closeModal } from './components/modal';
 
 // @todo: DOM узлы
 
@@ -9,9 +9,20 @@ const mainContent = document.querySelector('.content');
 const profileInfo = mainContent.querySelector('.profile__info');
 const profileEditButton = mainContent.querySelector('.profile__edit-button');
 const cardAddButton = mainContent.querySelector('.profile__add-button');
+const popupEditProfile = document.querySelector('.popup_type_edit');
+const popupAddCard = document.querySelector('.popup_type_new-card');
+const profileTitle = profileInfo.querySelector('.profile__title');
+const profileDescription = profileInfo.querySelector('.profile__description')
+const popupImage = document.querySelector('.popup_type_image');
+const imageInPopup = popupImage.querySelector('.popup__image');
+const captionInPopup = popupImage.querySelector('.popup__caption')
 const placesList = document.querySelector('.places__list');
 const inputName = document.querySelector('.popup__input_type_name');
 const inputDescription = document.querySelector('.popup__input_type_description');
+const popupList = document.querySelectorAll('.popup');
+const inputCardName = document.querySelector('.popup__input_type_card-name');
+const inputLink = document.querySelector('.popup__input_type_url');
+const popupFormNewPlace = document.forms['new-place'];
 
 // @todo: Вывести карточки на страницу
 
@@ -21,31 +32,43 @@ initialCards.forEach(function (element) {
   placesList.append(card);
 });
 
+// плавное открытие попапа
+
+window.onload = function() {
+  popupList.forEach(function (popup) {
+    popup.classList.add('popup_is-animated');
+  });
+};
+
+// Функция открытия попапа с картинкой
+
+function openModalImage(cardImage) {
+  imageInPopup.src = cardImage.src;
+  captionInPopup.textContent = cardImage.alt;
+  imageInPopup.alt = cardImage.alt;
+
+  openModal(popupImage);
+};
+
 // Обработчики события:
   // редактирование профиля
 
 profileEditButton.addEventListener('click', function() {
-  const popupEditProfile = document.querySelector('.popup_type_edit');
-
   openModal(popupEditProfile);
 
-  inputName.value = profileInfo
-    .querySelector('.profile__title').textContent;
-  inputDescription.value = profileInfo
-    .querySelector('.profile__description').textContent;
-
-  popupEditProfile.addEventListener('submit', submitProfileEdit);
+  inputName.value = profileTitle.textContent;
+  inputDescription.value = profileDescription.textContent;
 });
+
+popupEditProfile.addEventListener('submit', submitProfileEdit);
 
   // добавление карточки
 
 cardAddButton.addEventListener('click', function() {
-  const popupAddCard = document.querySelector('.popup_type_new-card');
-
   openModal(popupAddCard);
-
-  popupAddCard.addEventListener('submit', submitCardAdd);
 });
+
+popupAddCard.addEventListener('submit', submitCardAdd);
 
 // Функции отправки форм:
   // редактирования профиля
@@ -53,12 +76,10 @@ cardAddButton.addEventListener('click', function() {
 function submitProfileEdit(evt) {
   evt.preventDefault();
 
-  profileInfo.querySelector('.profile__title')
-    .textContent = inputName.value;
-  profileInfo.querySelector('.profile__description')
-    .textContent = inputDescription.value;
+  profileTitle.textContent = inputName.value;
+  profileDescription.textContent = inputDescription.value;
 
-  closeModal(evt.target.closest('.popup'));
+  closeModal(popupEditProfile);
 };
 
   // добавления карточки
@@ -66,14 +87,11 @@ function submitProfileEdit(evt) {
 function submitCardAdd(evt) {
   evt.preventDefault();
 
-  const inputCardName = document.querySelector('.popup__input_type_card-name');
-  const inputLink = document.querySelector('.popup__input_type_url');
-
   initialCards.name = inputCardName.value;
   initialCards.link = inputLink.value;
   const card = createCard(initialCards, deleteCard, isLiked, openModalImage);
   placesList.prepend(card);
 
-  closeModal(evt.target.closest('.popup'));
-  evt.target.closest('.popup__form').reset();
+  closeModal(popupAddCard);
+  popupFormNewPlace.reset();
 };

@@ -1,15 +1,4 @@
-export { openModal, openModalImage, closeModal,
-  closeModalButton, closeModalOverlay, closeModalEsc, closeEsc }
-
-const popupList = document.querySelectorAll('.popup');
-
-// плавное открытие попапа
-
-window.onload = function() {
-  popupList.forEach(function (popup) {
-    popup.classList.add('popup_is-animated');
-  });
-};
+export { openModal, closeModal }
 
 // Функция открытия попапа
 
@@ -23,21 +12,6 @@ function openModal(popupElement) {
   popupElement.addEventListener('click', closeModalOverlay);
 
   closeModalEsc();
-};
-
-// Функция открытия попапа с картинкой
-
-function openModalImage(evt) {
-  const popupImage = document.querySelector('.popup_type_image');
-
-  popupImage.querySelector('.popup__image')
-    .src = evt.target.closest('.card__image').src;
-  popupImage.querySelector('.popup__caption')
-    .textContent = evt.target.closest('.card__image').alt;
-  popupImage.querySelector('.popup__image')
-    .alt = evt.target.closest('.card__image').alt;
-
-  openModal(popupImage);
 };
 
 // Функции закрытия попапа
@@ -70,9 +44,9 @@ function closeModalEsc() {
 };
 
 function closeEsc(evt) {
-  const popupIsOpened = document.querySelector('.popup_is-opened');
-
   if (evt.key === 'Escape') {
+    const popupIsOpened = document.querySelector('.popup_is-opened');
+
     closeModal(popupIsOpened);
   }
 };
