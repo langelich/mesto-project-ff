@@ -1,0 +1,32 @@
+.popup__input_type_error, 
+.popup__error_visible > .popup__input:invalid {
+  border-bottom: 1px solid #FF0000;
+}
+
+.text-input-name-error_active,
+.text-input-description-error_active,
+.text-input-place-name-error_active,
+.text-input-link-error_active,
+.text-input-link-img-error_active {
+  color: red;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.21;
+  position: absolute;
+}
+
+.text-input-name-error_active,
+.text-input-place-name-error_active {
+  inset-block-start: 140px;
+}
+
+.text-input-description-error_active,
+.text-input-link-error_active {
+  inset-block-start: 197px;
+  inset-inline-start: 36px;
+}
+
+.text-input-link-img-error_active {
+  inset-block-start: 145px;
+  inset-inline-start: 36px;
+}

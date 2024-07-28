@@ -1,0 +1,7 @@
+.card__like {
+  font-family: inherit;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-block-start: -8px;
+}

@@ -4,9 +4,12 @@
 @import url('./__title/popup__title.css');
 @import url('./__form/popup__form.css');
 @import url('./__input/popup__input.css');
+@import url('./__input_type_error/popup__input_type_error.css');
 @import url('./__button/popup__button.css');
+@import url('./__button/_delete-card/popup__button_delete-card.css');
 @import url('./__caption/popup__caption.css');
 @import url('./__image/popup__image.css');
+@import url('./__content/__content_card-delete/popup__content_card-delete.css');
 
 .popup {
   font-family: 'Inter', Arial, sans-serif;

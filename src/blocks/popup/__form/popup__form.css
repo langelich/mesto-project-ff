@@ -1,3 +1,7 @@
 .popup__form {
   margin-top: 27px;
 }
+
+.popup__content_card-delete > .popup__form {
+  margin-top: 0;
+}

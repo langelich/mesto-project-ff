@@ -1,0 +1,9 @@
+.popup__content_card-delete {
+  width: 100%;
+  /* max-inline-size: 430px;
+  max-block-size: 181px; */
+  max-width: 430px;
+  width: 100%;
+  /* height: 180px; */
+  min-block-size: 180px;
+}
