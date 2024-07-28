@@ -1,3 +1,3 @@
 # Проектная работа Mesto
 
-https://langelich.github.io/mesto-project
+https://langelich.github.io/mesto-project-ff/
