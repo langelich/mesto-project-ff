@@ -1,15 +1,11 @@
-export { openModal, closeModal };
+export { openModal, closeModal, closeModalButton };
 
 // Функция открытия попапа
 
 function openModal(popupElement) {
-  const buttonPopupClose = popupElement.querySelector('.popup__close');
-
   popupElement.classList.add('popup_is-opened');
-  buttonPopupClose.addEventListener('click', closeModalButton);
-  popupElement.addEventListener('click', closeModalOverlay);
-
-  closeModalEsc();
+  popupElement.addEventListener('mouseup', closeModalOverlay);
+  document.addEventListener('keydown', closeEsc);
 };
 
 // Функции закрытия попапа
@@ -22,22 +18,14 @@ function closeModal(popupElement) {
   // кнопкой
 
 function closeModalButton(evt) {
-  closeModal(evt.target.closest('.popup'));
+  closeModal(evt.target.closest('.popup_is-opened'));
 };
 
   // кликом на оверлей
 
 function closeModalOverlay(evt) {
   if (evt.currentTarget === evt.target) {
-    closeModal(evt.target.closest('.popup'));
-  };
-};
-
-  // Esc
-
-function closeModalEsc() {
-  if (document.querySelector('.popup_is-opened')) {
-    document.addEventListener('keydown', closeEsc);
+    closeModal(evt.target);
   };
 };
 

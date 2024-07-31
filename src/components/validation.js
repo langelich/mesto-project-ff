@@ -1,15 +1,6 @@
-export { validationConfig, enableValidation, clearValidation };
+export { enableValidation, clearValidation };
 
-const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-};
-
-function isValid(formSelector, inputSelector) {
+function isValid(formSelector, inputSelector, validationConfig) {
   if (inputSelector.validity.patternMismatch) {
     inputSelector.setCustomValidity(inputSelector.dataset.errorMessage); 
   } else {
@@ -18,7 +9,7 @@ function isValid(formSelector, inputSelector) {
   if (!inputSelector.validity.valid) {
     showErrorMessage(formSelector, inputSelector, inputSelector.validationMessage);
   } else {
-    hiddenErrorMessage(formSelector, inputSelector);
+    hiddenErrorMessage(formSelector, inputSelector, validationConfig);
   };
 };
 
@@ -32,25 +23,25 @@ function showErrorMessage(formSelector, inputSelector, errorMessage) {
   errorClass.classList.add('popup__error_visible');
 };
 
-function hiddenErrorMessage(formSelector, inputSelector) {
+function hiddenErrorMessage(formSelector, inputSelector, validationConfig) {
   const textInputError = formSelector.querySelector(`.${inputSelector.id}-error`);
   const errorClass = document.querySelector('.popup'); 
 
-  inputSelector.classList.remove('popup__input_type_error');
+  inputSelector.classList.remove(validationConfig.inputErrorClass);
   textInputError.classList.remove(`${inputSelector.id}-error_active`);
   textInputError.textContent = '';
-  errorClass.classList.remove('popup__error_visible');
+  errorClass.classList.remove(validationConfig.inputErrorClass);
 };
 
-function setEventListenerForms(formSelector) {
-  const inputSelector = Array.from(formSelector.querySelectorAll('.popup__input'));
-  const submitButtonSelector = formSelector.querySelector('.popup__button');
-  toggleButton(inputSelector, submitButtonSelector);
+function setEventListenerForms(formSelector, validationConfig) {
+  const inputSelector = Array.from(formSelector.querySelectorAll(validationConfig.inputSelector));
+  const submitButtonSelector = formSelector.querySelector(validationConfig.submitButtonSelector);
+  toggleButton(inputSelector, submitButtonSelector, validationConfig);
 
   inputSelector.forEach(inputElement => {
     inputElement.addEventListener('input', function() {  
-      isValid(formSelector, inputElement);
-      toggleButton(inputSelector, submitButtonSelector);
+      isValid(formSelector, inputElement, validationConfig);
+      toggleButton(inputSelector, submitButtonSelector, validationConfig);
     });
   });
 };
@@ -61,23 +52,24 @@ function hasInvalidInput(inputSelector) {
   });
 };
 
-function toggleButton(inputSelector, submitButtonSelector) {
+function toggleButton(inputSelector, submitButtonSelector, validationConfig) {
   if (hasInvalidInput(inputSelector)) {
     submitButtonSelector.setAttribute('disabled', true);;
-    submitButtonSelector.classList.add('popup__button_disabled');
+    submitButtonSelector.classList.add(validationConfig.inactiveButtonClass);
     submitButtonSelector.setAttribute('aria-disabled', true);
   } else {
     submitButtonSelector.removeAttribute('disabled', false);
-    submitButtonSelector.classList.remove('popup__button_disabled');
+    submitButtonSelector.classList.remove(validationConfig.inactiveButtonClass);
     submitButtonSelector.removeAttribute('aria-disabled', false);
   };
 };
 
-function enableValidation() {
-  const formSelector = Array.from(document.querySelectorAll('.popup__form'));
+function enableValidation(validationConfig) {
+  const formSelector = Array.from(document.querySelectorAll(validationConfig.formSelector));
 
   formSelector.forEach(formElement => {
-    setEventListenerForms(formElement);
+    setEventListenerForms(formElement, validationConfig);
+
   });
 };
 
@@ -86,10 +78,10 @@ function clearValidation (formSelector, validationConfig) {
   const buttonDisabled = formSelector.querySelector(validationConfig.submitButtonSelector);
 
   buttonDisabled.setAttribute('disabled', true);;
-  buttonDisabled.classList.add('popup__button_disabled');
+  buttonDisabled.classList.add(`${validationConfig.inactiveButtonClass}`);
   buttonDisabled.setAttribute('aria-disabled', true);
 
   inputError.forEach(inputElement => {
-    hiddenErrorMessage(formSelector, inputElement);
+    hiddenErrorMessage(formSelector, inputElement, validationConfig);
   });
 };

@@ -1,9 +1,8 @@
 import './index.css';
 import { createCard } from './components/card';
-import { openModal, closeModal } from './components/modal';
-import { validationConfig, enableValidation, clearValidation } from './components/validation';
-import { getUserProfile, getCards, patchUserProfile, postCreateCard } from './components/api';
-export { profileTitle, profileInfo, mainContent, profileDescription, profileImage, openModalImage, placesList };
+import { openModal, closeModal, closeModalButton } from './components/modal';
+import { enableValidation, clearValidation } from './components/validation';
+import { getUserProfile, getCards, patchUserProfile, postCreateCard, patchProfileImg } from './components/api';
 
 // @todo: DOM узлы
 
@@ -30,17 +29,42 @@ const profileImage = mainContent.querySelector('.profile__image');
 const popupEditImgProfile = document.querySelector('.popup_type_edit-img');
 const inputUrlImg = popupEditImgProfile.querySelector('.popup__input_type_url-img');
 const imgProfileForm = document.forms['link-img'];
-
-const promises = [getUserProfile(), getCards()];
-Promise.all(promises);
-
-// плавное открытие попапа
-
-window.onload = function() {
-  popupList.forEach(function (popup) {
-    popup.classList.add('popup_is-animated');
-  });
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
 };
+
+Promise.all([getUserProfile(), getCards()])
+  .then(([userProfile, initialCards]) => {
+    profileTitle.textContent = userProfile.name;
+    profileDescription.textContent = userProfile.about;
+    profileImage.style.backgroundImage = `url('${userProfile.avatar}')`; 
+
+    initialCards.forEach(element => {
+      const card = createCard(element, userProfile, openModalImage);
+      placesList.append(card);
+    })
+  })
+  .catch((err) => {
+    console.log(err);
+  }); 
+  
+  
+// плавное открытие попапа и слушатель закрытия
+
+popupList.forEach(function (popup) {
+  const buttonPopupClose = popup.querySelector('.popup__close');
+
+  popup.classList.add('popup_is-animated');
+  buttonPopupClose.addEventListener('click', function(evt) {
+    closeModalButton(evt);
+  });
+});
+
 
 // Функция открытия попапа с картинкой
 
@@ -66,19 +90,18 @@ profileEditButton.addEventListener('click', function() {
 profileForm.addEventListener('submit', submitProfileForm);
 
 function submitProfileForm(evt) {
-  evt.preventDefault();
-  const buttonSubmit = profileForm.querySelector('.popup__button');
-
-  savingButtonSubmit(buttonSubmit);
+  submitForm(evt, profileForm);
   patchUserProfile({
     name: inputName.value,
     about: inputDescription.value
   })
-    .then(() => {
+    .then((result) => {
       closeModal(popupEditProfile);
+      profileTitle.textContent = result.name;
+      profileDescription.textContent = result.about;  
     })
     .finally(() => {
-      saveButtonSubmit(buttonSubmit) 
+      saveButtonSubmit(profileForm.querySelector('.popup__button')) 
     })
 };
 
@@ -93,22 +116,19 @@ cardAddButton.addEventListener('click', function() {
 newPlaceForm.addEventListener('submit', submitCardAdd);
   
 function submitCardAdd(evt) {
-  evt.preventDefault();
-  const buttonSubmit = newPlaceForm.querySelector('.popup__button');
-
-  savingButtonSubmit(buttonSubmit);
-  postCreateCard({
+  submitForm(evt, newPlaceForm)
+  Promise.all([postCreateCard({
     name: inputCardName.value,
     link: inputLink.value,
-    likes: '0'
-  })
-    .then(result => {
-      const card = createCard(result, openModalImage);
+  }), 
+  getUserProfile()])
+    .then(([cardData, userData]) => {
+      const card = createCard(cardData, userData, openModalImage);
       placesList.prepend(card);
       closeModal(popupAddCard);
     })
     .finally(() => {
-      saveButtonSubmit(buttonSubmit);
+      saveButtonSubmit(newPlaceForm.querySelector('.popup__button')) 
     })
 };
 
@@ -123,10 +143,7 @@ profileImage.addEventListener('click', function() {
 imgProfileForm.addEventListener('submit', submitProfileImgForm);
 
 function submitProfileImgForm(evt) {
-  evt.preventDefault();
-  const buttonSubmit = imgProfileForm.querySelector('.popup__button');
-
-  savingButtonSubmit(buttonSubmit);
+  submitForm(evt, imgProfileForm);
   patchProfileImg({
     avatar: inputUrlImg.value
   })
@@ -135,7 +152,7 @@ function submitProfileImgForm(evt) {
       profileImage.style.backgroundImage = `url('${result.avatar}')`; 
     })
     .finally(() => {
-      saveButtonSubmit(buttonSubmit);
+      saveButtonSubmit(imgProfileForm.querySelector('.popup__button')) 
     })
 };
 
@@ -148,7 +165,16 @@ function savingButtonSubmit(buttonSubmit) {
 // Кнопка "Сохранить"
 
 function saveButtonSubmit(buttonSubmit) {
-      buttonSubmit.textContent = 'Сохранить';
+  buttonSubmit.textContent = 'Сохранить';
+}
+
+// submit форм 
+
+function submitForm(evt, formSelector) {
+  evt.preventDefault();
+  const buttonSubmit = formSelector.querySelector('.popup__button');
+
+  savingButtonSubmit(buttonSubmit);
 }
 
 enableValidation(validationConfig);

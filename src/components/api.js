@@ -1,29 +1,20 @@
-import { profileTitle, profileInfo, mainContent, profileDescription, profileImage, openModalImage, placesList } from '../index';
-import { createCard } from './card';
-
 export const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-18',
   headers: {
     authorization: '5edf568f-c702-4496-a888-a9757fc84a0b',
     'Content-Type': 'application/json'
   }
-}
+};
+
+const getResponse = (res) => {
+  return res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
+};
 
 export const getUserProfile = () => {
   return fetch(`${config.baseUrl}/users/me`, {
       headers: config.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    }) 
-    .then(result => {
-      profileTitle.textContent = result.name;
-      profileDescription.textContent = result.about;
-      profileImage.style.backgroundImage = `url('${result.avatar}')`; 
-    })
+    .then(getResponse)
     .catch((err) => {
       console.log(err);
     }); 
@@ -33,34 +24,18 @@ export const getCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
       headers: config.headers
     })
-      .then(res => {
-      if (res.ok) {
-        return res.json();
-    }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    }) 
-    .then(result => { 
-      result.forEach(element => {
-      const card = createCard(element, openModalImage);
-      placesList.append(card);
-      });
-    })
+    .then(getResponse)
     .catch((err) => {
       console.log(err);
     }); 
 };
 
-export const deleteCardId = (cardId) => {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-18/cards/${cardId}`, {
+export const deleteCardFromServer = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    }) 
+    .then(getResponse)
     .catch((err) => {
       console.log(err);
     }); 
@@ -71,12 +46,7 @@ export const putAddLike = (cardId) => {
     method: 'PUT',
     headers: config.headers
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-      return Promise.reject(`Ошибка: ${res.status}`);
-  })
+  .then(getResponse)
   .catch((err) => {
     console.log(err);
   }); 
@@ -87,19 +57,14 @@ export const deleteLike = (cardId) => {
     method: 'DELETE',
     headers: config.headers
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-      return Promise.reject(`Ошибка: ${res.status}`);
-  }) 
+  .then(getResponse)
   .catch((err) => {
     console.log(err);
   }); 
 };
 
 export const patchUserProfile = (user) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
@@ -107,18 +72,14 @@ export const patchUserProfile = (user) => {
       about: user.about,
     })
   })
-    .then(res => res.json())
-    .then(result => {
-      profileTitle.textContent = result.name;
-      profileDescription.textContent = result.about;
-    })
+    .then(getResponse)
     .catch((err) => {
       console.log(err);
     }); 
 };
 
 export const postCreateCard = (card) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {
+  return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
     headers: config.headers,
     body: JSON.stringify({
@@ -127,12 +88,7 @@ export const postCreateCard = (card) => {
       likes: card.likes,
     })
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }) 
+    .then(getResponse)
     .catch((err) => {
       console.log(err);
     }); 
@@ -146,12 +102,7 @@ export const patchProfileImg = (user) => {
       avatar: user.avatar
     })
   })
-    .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    }) 
+    .then(getResponse)
     .catch((err) => {
       console.log(err);
     }); 
