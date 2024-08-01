@@ -7,7 +7,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: Функция создания карточки
 
-function createCard(element, userProfile, openModalImage) {
+function createCard(element, userId, openModalImage) {
   const placesItem = cardTemplate.querySelector('.places__item').cloneNode(true);
   const cardLikeButton = placesItem.querySelector('.card__like-button');
   const deleteButton = placesItem.querySelector('.card__delete-button');
@@ -15,7 +15,6 @@ function createCard(element, userProfile, openModalImage) {
   const cardLikeCount = placesItem.querySelector('.card__like-count');
   const cardId = element._id;
   const cardLikes = element.likes;
-  const userId = userProfile._id;
 
   cardImage.src = element.link;
   placesItem.querySelector('.card__title').textContent = element.name;
@@ -28,6 +27,9 @@ function createCard(element, userProfile, openModalImage) {
     deleteCardFromServer(cardId)
       .then(() => {
         cardDeleted.remove();
+      })
+      .catch((err) => { 
+        console.log(err); 
       })
     })
   } else {
@@ -53,11 +55,17 @@ function createCard(element, userProfile, openModalImage) {
           isLiked(evt);
           cardLikeCount.textContent = result['likes'].length;
         })
+        .catch((err) => { 
+          console.log(err); 
+        })
     } else {
       putAddLike(cardId)
         .then(result => {
           isLiked(evt);
           cardLikeCount.textContent = result['likes'].length;
+        })
+        .catch((err) => { 
+          console.log(err); 
         })
     }
   });

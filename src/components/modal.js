@@ -1,4 +1,4 @@
-export { openModal, closeModal, closeModalButton };
+export { openModal, closeModal };
 
 // Функция открытия попапа
 
@@ -13,12 +13,6 @@ function openModal(popupElement) {
 function closeModal(popupElement) {
   popupElement.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', closeEsc);
-};
-
-  // кнопкой
-
-function closeModalButton(evt) {
-  closeModal(evt.target.closest('.popup_is-opened'));
 };
 
   // кликом на оверлей
